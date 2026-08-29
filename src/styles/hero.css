@@ -1,0 +1,108 @@
+.hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--bg);
+}
+
+/* Full-bleed canvas layer. The photo plane paints the left half and the rest
+   stays transparent, so the text column reads straight through it. */
+.hero-canvas-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero-fallback-img {
+  position: absolute;
+  inset: 0;
+  width: 50%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 100%;
+}
+
+/* Reserves the left column for the canvas; deliberately empty. */
+.hero-photo-cell {
+  min-width: 0;
+}
+
+.hero-text-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 28px;
+  /* Clears the brush stroke, which reaches ~10.5vw past the column seam where
+     it is widest, at the top of its arc. */
+  padding: 60px 80px calc(60px + var(--footer-height)) max(96px, 11.5vw);
+  min-width: 0;
+}
+
+.hero-logo {
+  width: 68px;
+  height: auto;
+}
+
+.hero-title {
+  margin: 0;
+  font-size: clamp(2rem, 4.4vw, 3.5rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.hero-subtitle {
+  margin: 10px 0 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--orange);
+}
+
+.hero-quote {
+  margin: 0;
+  max-width: 40ch;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(1rem, 1.4vw, 1.2rem);
+  line-height: 1.65;
+  color: var(--text-muted);
+  border-left: 2px solid var(--orange);
+  padding-left: 18px;
+}
+
+@media (max-width: 768px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+
+  .hero-fallback-img {
+    width: 100%;
+    height: 50%;
+  }
+
+  /* Stroke is hidden when stacked, so the clearance padding is not needed. */
+  .hero-text-column {
+    padding: 32px 24px calc(24px + var(--footer-height));
+    gap: 18px;
+  }
+
+  .hero-logo {
+    width: 52px;
+  }
+
+  .hero-quote {
+    padding-left: 14px;
+  }
+}

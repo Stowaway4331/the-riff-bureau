@@ -1,0 +1,28 @@
+@import './tokens.css';
+@import './loading.css';
+@import './hero.css';
+@import './outcomes.css';
+@import './footer.css';
+@import './cursorAccents.css';
+
+/* NOTE: no `scroll-behavior: smooth` anywhere. It fights ScrollTrigger's
+   scrub — the browser animates the scroll position while the trigger is
+   trying to read it, which is what makes a scrubbed timeline jump to its
+   end state only once scrolling stops. */
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background-color: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+}
+
+img {
+  max-width: 100%;
+}

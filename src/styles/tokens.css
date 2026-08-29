@@ -1,0 +1,22 @@
+:root {
+  --orange: #ff6b35;
+  --orange-light: #ff8a5b;
+  --bg: #0a0a0a;
+  --bg-deep: #000000;
+  --surface: #151515;
+  --border: #1f1f1f;
+  --text: #ffffff;
+  --text-muted: #a8a8a8;
+  --text-dim: #777777;
+
+  --font-sans: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: Georgia, 'Times New Roman', serif;
+
+  --footer-height: 58px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}

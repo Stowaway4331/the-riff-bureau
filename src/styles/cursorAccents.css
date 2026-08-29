@@ -1,0 +1,97 @@
+.cursor-accents {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.cursor-accent {
+  position: absolute;
+  color: var(--orange);
+  opacity: 0.42;
+  will-change: transform;
+}
+
+/* GSAP writes transform on .cursor-accent; the idle float runs here so the
+   two never overwrite each other's transform. */
+.cursor-accent-float {
+  display: block;
+  width: 100%;
+  height: 100%;
+  animation: accent-float 5s ease-in-out infinite;
+}
+
+.cursor-accent svg {
+  width: 100%;
+  height: 100%;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/*
+ * Five positions in a rough pentagon around the frame — four corners plus a
+ * far-left midpoint — so every symbol sits outside the 32-68% / 32-68% box
+ * at screen centre. Offsets are irregular rather than mirrored so the
+ * scatter reads as chaotic, not a grid.
+ */
+.accent-sharp {
+  top: 9%;
+  left: 5%;
+}
+
+.accent-flat {
+  top: 71%;
+  right: 6%;
+}
+
+.accent-natural {
+  top: 6%;
+  right: 12%;
+}
+
+.accent-single {
+  top: 83%;
+  left: 9%;
+}
+
+.accent-beamed {
+  top: 43%;
+  left: 3%;
+}
+
+/* Each symbol drifts at its own speed and phase so the five never sync up. */
+.accent-flat .cursor-accent-float {
+  animation-duration: 6.5s;
+  animation-delay: -2s;
+}
+
+.accent-natural .cursor-accent-float {
+  animation-duration: 4.2s;
+  animation-delay: -3.4s;
+}
+
+.accent-single .cursor-accent-float {
+  animation-duration: 5.8s;
+  animation-delay: -0.8s;
+}
+
+.accent-beamed .cursor-accent-float {
+  animation-duration: 7.1s;
+  animation-delay: -4.6s;
+}
+
+@keyframes accent-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-accent-float {
+    animation: none;
+  }
+}
