@@ -1,3 +1,19 @@
+/*
+ * Site-wide stacking: background (unpositioned, or z-index 0) < cursor
+ * accents (z-index 1, in cursorAccents.css) < page content (z-index 2) <
+ * footer (z-index 100, in footer.css).
+ *
+ * THE RULE FOR ANY NEW SECTION: never put position + an explicit z-index on
+ * the section root that also carries its own background — that traps the
+ * whole box, background included, into one stacking layer, so the
+ * background paints above the accents no matter how low a number you pick.
+ * Leave the section root as position:relative with NO z-index (it still
+ * works as a containing block for absolutely-positioned children), and put
+ * z-index:2 only on the inner wrapper(s) that hold the actual text/cards/
+ * icons. .hero does this below (root has no z-index; .hero-grid at the
+ * bottom of this file carries the content z-index); .outcomes in
+ * outcomes.css follows the same pattern and explains the trap it fixed.
+ */
 .hero {
   position: relative;
   width: 100%;
@@ -11,7 +27,7 @@
 .hero-canvas-layer {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 0;
   pointer-events: none;
 }
 
@@ -21,6 +37,20 @@
   width: 50%;
   height: 100%;
   object-fit: cover;
+}
+
+/* Large, faint background flourish sitting behind the text column. Starts at
+   opacity 0 — the Hero component tweens it in alongside the text reveal. */
+.hero-guitar-art {
+  position: absolute;
+  z-index: 0;
+  right: -5%;
+  bottom: 4%;
+  height: 84%;
+  width: auto;
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
 }
 
 .hero-grid {
@@ -90,6 +120,12 @@
   .hero-fallback-img {
     width: 100%;
     height: 50%;
+  }
+
+  /* Stacked layout gives the text column the full viewport width; the
+     watermark has no clear background region to sit in without crowding it. */
+  .hero-guitar-art {
+    display: none;
   }
 
   /* Stroke is hidden when stacked, so the clearance padding is not needed. */

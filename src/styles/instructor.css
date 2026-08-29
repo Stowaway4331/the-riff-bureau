@@ -1,0 +1,149 @@
+/* Flat --bg, same reasoning as timeline.css. This is the last section before
+   the fixed footer, so its bottom padding clears the footer bar. */
+.instructor {
+  width: 100%;
+  padding: 110px 60px calc(110px + var(--footer-height));
+  background-color: var(--bg);
+}
+
+/* Content tier — see the stacking note in hero.css. */
+.instructor-container {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 0.85fr 1fr;
+  gap: 70px;
+  align-items: center;
+}
+
+.instructor-photo-wrap {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.instructor-photo-glow {
+  position: absolute;
+  inset: -12%;
+  z-index: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 107, 53, 0.32), transparent 70%);
+  filter: blur(6px);
+  /* Baseline/fallback intensity. useReactivePhoto drives this up toward 1 via
+     inline style as the cursor approaches and eases it back down to this
+     same value at rest — keep in sync with GLOW_MIN there. Reduced-motion
+     and touch devices never get a JS write at all, so this is also their
+     permanent value. */
+  opacity: 0.4;
+}
+
+/*
+ * Zoom-and-pan technique for recentring the subject within the mask.
+ * object-fit:cover alone gives almost no crop slack here, since the source
+ * photo and this box are both close to square — object-position by itself
+ * has nothing to pan across. Rendering the image at 148% of the box first
+ * manufactures that slack; object-position then chooses where within that
+ * oversized render the mask sits. The subject (face/torso/guitar) sits
+ * left-of-centre in the source photo, with genuine empty space (stairs,
+ * railing) on the right, hence the low X value below.
+ *
+ * Centred via `inset: -24%` (top/right/bottom/left all -24%, which yields
+ * the same 148%-sized, centred box as width/height:148% + a translate(-50%,
+ * -50%) would) rather than a transform. Combining `transform` with
+ * `clip-path: url(#id)` on an element whose clip-path references an
+ * objectBoundingBox SVG <clipPath> is a known bad interaction in Chromium/
+ * WebKit that can make the clipped content fail to render at all — this
+ * sidesteps it entirely rather than relying on a specific engine's fix.
+ *
+ * Two independent knobs if this ever needs nudging: the inset percentage
+ * (more negative = more room to pan, but a tighter crop) and the
+ * object-position pair (which part of the source lands at the mask centre).
+ */
+.instructor-photo {
+  position: absolute;
+  z-index: 1;
+  inset: -24%;
+  object-fit: cover;
+  object-position: 38% 44%;
+  clip-path: url(#instructor-mask);
+  display: block;
+}
+
+.instructor-eyebrow {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--orange);
+}
+
+.instructor-name {
+  margin: 14px 0 0;
+  font-size: clamp(2rem, 3.4vw, 2.8rem);
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+.instructor-bio {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 58ch;
+  margin-top: 22px;
+}
+
+.instructor-bio p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--text-muted);
+}
+
+.instructor-highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 32px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.instructor-highlights li {
+  padding: 9px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .instructor-container {
+    grid-template-columns: 1fr;
+    gap: 48px;
+    text-align: center;
+  }
+
+  .instructor-bio {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .instructor-highlights {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .instructor {
+    padding: 72px 24px calc(72px + var(--footer-height));
+  }
+
+  .instructor-photo-wrap {
+    max-width: 300px;
+  }
+}

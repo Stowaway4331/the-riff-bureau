@@ -1,4 +1,5 @@
 import { usePointerParallax } from '../hooks/usePointerParallax';
+import { useScrollScramble } from '../hooks/useScrollScramble';
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
 function BeamedNotes() {
@@ -57,35 +58,83 @@ function Natural() {
  * pentagon around the frame) so all five sit outside the 32-68% / 32-68%
  * box at the centre of the viewport, with irregular offsets rather than a
  * mirrored grid so the scatter reads as chaotic instead of symmetric.
+ *
+ * `scramble` params drive the scroll-scrub wobble in useScrollScramble:
+ * amp is a percent of viewport width/height (kept small — a wobble around
+ * the anchor, not a sweep across the screen), freq is how many wobble
+ * cycles happen across the whole document scroll, and phase offsets each
+ * symbol's cycle so the five never move in sync.
  */
 const ACCENTS = [
-  { id: 'sharp', depth: 18, size: 24, Glyph: Sharp, className: 'accent-sharp' },
-  { id: 'flat', depth: 11, size: 30, Glyph: Flat, className: 'accent-flat' },
-  { id: 'natural', depth: 20, size: 22, Glyph: Natural, className: 'accent-natural' },
-  { id: 'single', depth: 15, size: 27, Glyph: SingleNote, className: 'accent-single' },
-  { id: 'beamed', depth: 9, size: 26, Glyph: BeamedNotes, className: 'accent-beamed' },
+  {
+    id: 'sharp',
+    depth: 18,
+    size: 24,
+    Glyph: Sharp,
+    className: 'accent-sharp',
+    scramble: { ampX: 5, ampY: 4, freqX: 2.7, freqY: 3.3, phase: 0.4 },
+  },
+  {
+    id: 'flat',
+    depth: 11,
+    size: 30,
+    Glyph: Flat,
+    className: 'accent-flat',
+    scramble: { ampX: 4.5, ampY: 5.5, freqX: 3.6, freqY: 2.1, phase: 2.1 },
+  },
+  {
+    id: 'natural',
+    depth: 20,
+    size: 22,
+    Glyph: Natural,
+    className: 'accent-natural',
+    scramble: { ampX: 6, ampY: 3.5, freqX: 2.1, freqY: 4.4, phase: 4.0 },
+  },
+  {
+    id: 'single',
+    depth: 15,
+    size: 27,
+    Glyph: SingleNote,
+    className: 'accent-single',
+    scramble: { ampX: 3.8, ampY: 5, freqX: 4.2, freqY: 2.6, phase: 1.2 },
+  },
+  {
+    id: 'beamed',
+    depth: 9,
+    size: 26,
+    Glyph: BeamedNotes,
+    className: 'accent-beamed',
+    scramble: { ampX: 5.2, ampY: 4.2, freqX: 3.0, freqY: 3.9, phase: 3.3 },
+  },
 ];
 
 export function CursorAccents() {
   const reducedMotion = usePrefersReducedMotion();
-  const { register } = usePointerParallax();
+  const { register: registerPointer } = usePointerParallax();
+  const { register: registerScramble } = useScrollScramble();
 
   if (reducedMotion) return null;
 
   return (
     <div className="cursor-accents" aria-hidden="true">
-      {ACCENTS.map(({ id, depth, size, Glyph, className }) => (
+      {ACCENTS.map(({ id, depth, size, Glyph, className, scramble }) => (
         <div
           key={id}
-          ref={register}
+          ref={registerPointer}
           className={`cursor-accent ${className}`}
           data-max-offset={depth}
           style={{ width: size, height: size }}
         >
-          {/* The float lives on an inner element so its CSS transform does not
-              collide with the pointer transform GSAP writes to the parent. */}
-          <span className="cursor-accent-float">
-            <Glyph />
+          {/* Three nested layers so pointer parallax, scroll-scrub wobble, and
+              the idle float each own their own transform — see the note in
+              cursorAccents.css. */}
+          <span
+            ref={(el) => registerScramble(el, scramble)}
+            className="cursor-accent-scroll"
+          >
+            <span className="cursor-accent-float">
+              <Glyph />
+            </span>
           </span>
         </div>
       ))}

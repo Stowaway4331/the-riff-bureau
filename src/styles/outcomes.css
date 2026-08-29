@@ -1,12 +1,55 @@
+/*
+ * IMPORTANT — cross-reference the stacking note in hero.css. The section
+ * root must stay z-index:auto (position:relative only, no z-index of its
+ * own). Setting z-index here would trap this element's whole box — its
+ * background included — into one stacking layer, so the background would
+ * paint ABOVE the site-wide cursor-accents layer (z-index 1) instead of
+ * behind it, no matter how low a value you pick. z-index:2 belongs on the
+ * *content* wrappers below (.outcomes-container, .outcomes-receive) so only
+ * the actual text/cards/icons sit above the accents, while this element's
+ * own background — the solid colour and the image tint below — stays an
+ * unpositioned box and paints behind them, same as .hero does for its own
+ * canvas layer and guitar-art background.
+ */
 .outcomes {
   position: relative;
-  z-index: 2;
   width: 100%;
-  padding: 100px 60px calc(100px + var(--footer-height));
+  /* No footer-height clearance here — Timeline/About/Instructor now follow
+     this section, so it no longer sits directly above the fixed footer. */
+  padding: 100px 60px;
   background-color: var(--bg);
+  /*
+   * Four stacked background layers (first listed paints on top):
+   *
+   * 1. Top transition band — .hero ends on a flat, untextured --bg (its own
+   *    photo/brush shader already dissolves to that colour near its own
+   *    bottom edge). Starting the textured image immediately below it would
+   *    still read as a seam, since the *texture* changes abruptly even
+   *    though the colour matches. This band fades solid --bg into
+   *    transparent over the first 260px, so the texture eases in instead of
+   *    starting on a hard line.
+   * 2. Bottom transition band — the mirror image of (1). Timeline (the next
+   *    section) is flat --bg again, so this section's own texture has to
+   *    ease back out before it ends, or the same seam reappears at the
+   *    *next* boundary instead.
+   * 3. Tint — a near-opaque wash of --bg over the image so it reads as
+   *    faint texture, not a competing picture.
+   * 4. The image itself.
+   *
+   * rgb(10, 10, 10) must match --bg in tokens.css if that token ever changes.
+   */
+  background-image: linear-gradient(to bottom, rgb(10, 10, 10), transparent 260px),
+    linear-gradient(to top, rgb(10, 10, 10), transparent 260px),
+    linear-gradient(rgba(10, 10, 10, 0.93), rgba(10, 10, 10, 0.93)), url('/background.png');
+  background-size: 100% 260px, 100% 260px, cover, cover;
+  background-position: top, bottom, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
 }
 
+/* Content tier — see the stacking note on .outcomes above. */
 .outcomes-container {
+  position: relative;
+  z-index: 2;
   display: grid;
   grid-template-columns: 1fr 320px;
   gap: 60px;
@@ -42,20 +85,85 @@
   gap: 2px;
 }
 
+/* Accordion: hovering (or focusing, for keyboard users) an item smoothly
+   opens its description. The grid-rows trick (0fr -> 1fr) animates to an
+   intrinsic height instead of a guessed max-height, so it stays smooth
+   regardless of how long the description text runs. */
 .checklist-item {
-  display: flex;
-  align-items: baseline;
-  gap: 16px;
-  padding: 14px 0;
+  padding: 4px 0;
   border-bottom: 1px solid var(--border);
+  cursor: default;
+  outline: none;
+}
+
+.checklist-item-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 4px;
   font-size: 1.02rem;
   color: var(--text-muted);
+  transition: color 0.25s ease;
+}
+
+.checklist-item:hover .checklist-item-head,
+.checklist-item:focus-visible .checklist-item-head {
+  color: var(--text);
 }
 
 .checklist-check {
   flex: none;
+  width: 20px;
+  height: 20px;
   color: var(--orange);
-  font-weight: 700;
+}
+
+.checklist-item-title {
+  flex: 1;
+}
+
+.checklist-caret {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--text-dim);
+  transition: transform 0.3s ease, color 0.25s ease;
+}
+
+.checklist-item:hover .checklist-caret,
+.checklist-item:focus-visible .checklist-caret {
+  color: var(--orange);
+  transform: rotate(180deg);
+}
+
+.checklist-item-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s ease;
+}
+
+.checklist-item:hover .checklist-item-body,
+.checklist-item:focus-visible .checklist-item-body {
+  grid-template-rows: 1fr;
+}
+
+.checklist-item-body-inner {
+  overflow: hidden;
+}
+
+.checklist-item-body p {
+  margin: 0;
+  padding: 0 4px 16px calc(20px + 16px + 4px);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .checklist-item-body,
+  .checklist-caret {
+    transition: none;
+  }
 }
 
 .completion-card {
@@ -80,7 +188,10 @@
   color: var(--text-muted);
 }
 
+/* Content tier — see the stacking note on .outcomes above. */
 .outcomes-receive {
+  position: relative;
+  z-index: 2;
   max-width: 1200px;
   margin: 90px auto 0;
   padding-top: 60px;
@@ -111,9 +222,37 @@
   text-align: center;
 }
 
-.receive-icon {
-  font-size: 1.9rem;
-  line-height: 1;
+.receive-icon-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--orange);
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.receive-icon-badge svg {
+  width: 26px;
+  height: 26px;
+}
+
+.receive-item:hover .receive-icon-badge {
+  border-color: var(--orange);
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .receive-icon-badge {
+    transition: none;
+  }
+
+  .receive-item:hover .receive-icon-badge {
+    transform: none;
+  }
 }
 
 .receive-label {

@@ -1,7 +1,10 @@
+/* Sits above the plain background (hero canvas / guitar art, z-index 0) but
+   below all real page content (z-index 2) and the footer (z-index 100) — see
+   the stacking note in hero.css. */
 .cursor-accents {
   position: fixed;
   inset: 0;
-  z-index: 3;
+  z-index: 1;
   pointer-events: none;
 }
 
@@ -12,8 +15,18 @@
   will-change: transform;
 }
 
-/* GSAP writes transform on .cursor-accent; the idle float runs here so the
-   two never overwrite each other's transform. */
+/* Three nested layers, each owning exactly one transform so the three
+   motion sources never overwrite each other:
+     .cursor-accent        <- pointer parallax (GSAP quickTo x/y)
+       .cursor-accent-scroll  <- scroll-scrub wobble (GSAP quickSetter x/y)
+         .cursor-accent-float   <- idle keyframe float (CSS translateY) */
+.cursor-accent-scroll {
+  display: block;
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+}
+
 .cursor-accent-float {
   display: block;
   width: 100%;
