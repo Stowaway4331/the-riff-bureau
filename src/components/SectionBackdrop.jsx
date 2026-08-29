@@ -15,7 +15,7 @@ import { useBackgroundParallax } from '../hooks/useBackgroundParallax';
  * `tint` is the opacity of the wash over the photo, per section, since some
  * of the images are far busier than others.
  */
-export function SectionBackdrop({ image, tint = 0.98 }) {
+export function SectionBackdrop({ image, tint = 0.96 }) {
   const wrapRef = useRef();
   const imageRef = useRef();
 
