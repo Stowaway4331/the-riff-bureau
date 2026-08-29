@@ -42,7 +42,7 @@ export function Register() {
       <div className="register-container">
         <div className="register-intro">
           <div className="register-logo register-reveal">
-            <img src="/logo 2 white.png" alt="The Riff Bureau" />
+            <img src="/webp-images/logo 2 white 600.webp" alt="The Riff Bureau" />
           </div>
 
           <p className="register-eyebrow register-reveal">Register</p>

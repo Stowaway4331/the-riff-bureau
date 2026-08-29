@@ -87,7 +87,7 @@ export function Hero({ ready, onAssetsReady }) {
       <img
         ref={artRef}
         className="hero-guitar-art"
-        src="/Orange Guitar.png"
+        src="/webp-images/Orange Guitar.webp"
         alt=""
         aria-hidden="true"
       />
@@ -99,7 +99,7 @@ export function Hero({ ready, onAssetsReady }) {
           <div className="hero-text-item">
             <img
               className="hero-logo"
-              src="/logo 2 white.png"
+              src="/webp-images/logo 2 white 600.webp"
               alt="The Riff Bureau"
             />
           </div>

@@ -291,7 +291,7 @@ export function Menu({ open, onOpenChange }) {
       >
         <div className="site-menu-inner">
           <div className="menu-head menu-stagger">
-            <img src="/logo 2 white.png" alt="The Riff Bureau" />
+            <img src="/webp-images/logo 2 white 600.webp" alt="The Riff Bureau" />
             <p>Bangalore &middot; 1:1 guitar lessons</p>
           </div>
 
