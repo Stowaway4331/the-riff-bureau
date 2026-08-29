@@ -14,7 +14,7 @@
  */
 .section-backdrop {
   --backdrop-fade: 260px;
-  --backdrop-tint: 0.96;
+  --backdrop-tint: 0.97;
   /* Slack the photo can travel through before its edge would scroll into
      view. The parallax travel in useBackgroundParallax is set well inside
      this; raise both together, never just the travel. */
