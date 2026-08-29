@@ -60,7 +60,7 @@ export function Outcomes() {
 
   return (
     <section className="outcomes" ref={sectionRef} data-nav-label="Outcomes">
-      <SectionBackdrop image="/background.png" tint={0.93} />
+      <SectionBackdrop image="/webp-images/background.webp" tint={0.93} />
 
       <div className="outcomes-container">
         <div className="outcomes-main">

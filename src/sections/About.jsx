@@ -31,7 +31,7 @@ export function About() {
 
   return (
     <section className="about" ref={sectionRef}>
-      <SectionBackdrop image="/background2.png" />
+      <SectionBackdrop image="/webp-images/background2.webp" />
 
       <div className="about-container">
         <p className="about-eyebrow">About</p>

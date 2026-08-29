@@ -48,7 +48,7 @@ export function Timeline() {
 
   return (
     <section className="timeline" ref={sectionRef}>
-      <SectionBackdrop image="/Fiery guitar.png" />
+      <SectionBackdrop image="/webp-images/Fiery guitar.webp" />
 
       <div className="timeline-container">
         <p className="timeline-eyebrow">The Programme</p>

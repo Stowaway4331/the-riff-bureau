@@ -5,7 +5,7 @@ import { HeroCanvas } from '../three/HeroCanvas';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
-const HERO_PHOTO = '/Hendrix - full.png';
+const HERO_PHOTO = '/webp-images/Hendrix - full.webp';
 
 // Resting opacity of the background guitar flourish. Kept as one constant
 // (rather than a value baked into hero.css) since both the CSS starting

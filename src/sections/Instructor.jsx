@@ -115,7 +115,7 @@ export function Instructor() {
             />
 
             <image
-              href="/instructor.png"
+              href="/webp-images/instructor.webp"
               x="-7"
               y="-16"
               width="150"
