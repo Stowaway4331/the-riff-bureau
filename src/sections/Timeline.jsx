@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { SectionBackdrop } from '../components/SectionBackdrop';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { AssessmentIcon, PracticeClockIcon } from '../components/icons/TimelineIcons';
 
@@ -47,6 +48,8 @@ export function Timeline() {
 
   return (
     <section className="timeline" ref={sectionRef}>
+      <SectionBackdrop image="/Fiery guitar.png" />
+
       <div className="timeline-container">
         <p className="timeline-eyebrow">The Programme</p>
         <h2 className="timeline-title">The 3 Month Course</h2>

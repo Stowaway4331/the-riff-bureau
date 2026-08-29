@@ -1,35 +1,58 @@
 import { useEffect, useRef } from 'react';
 import { usePrefersReducedMotion } from './usePrefersReducedMotion';
-import { BASE_ANGLES, BASE_RADII, buildBlobPath } from '../utils/blobPath';
+import {
+  BASE_ANGLES,
+  BASE_RADII,
+  BLOB_VIEWBOX,
+  buildBlobPath,
+} from '../utils/blobPath';
 
-const BULGE = 0.09; // how far an anchor can swell toward the cursor, in normalized units
-const SMOOTHING = 0.12; // per-frame lerp factor — lower = more fluid lag
+const BULGE = 0.09; // how far an anchor swells toward the cursor, normalized
+const SMOOTHING = 0.12; // per-frame lerp factor - lower is more fluid lag
 const INFLUENCE_MULT = 1.9; // reacts up to ~1.9x the element's own size away
-const GLOW_MIN = 0.4; // resting glow opacity — must match the fallback in instructor.css
-const GLOW_MAX = 1;
+
+// Glow opacity at rest and at closest approach. Deliberately restrained: the
+// halo should read as ambient light behind the photo, not a highlight ring.
+const GLOW_MIN = 0.26;
+const GLOW_MAX = 0.52;
+
+// How far outside the viewBox the gradient's focus may travel, in user units.
+const HOTSPOT_CLAMP = 26;
 
 /**
- * Ties both the blob mask and the glow behind the instructor photo to one
- * cursor-proximity signal, computed once per frame:
- *  - anchor points on the blob path facing the cursor swell outward
- *  - the glow's intensity rises as the cursor gets closer
+ * Drives the instructor photo's mask and its halo from one cursor-proximity
+ * signal, computed once per frame:
+ *  - anchor points on the blob facing the cursor swell outward
+ *  - the halo brightens as the cursor nears, and its gradient focus slides
+ *    toward the cursor so the brightening is LOCAL to that side rather than
+ *    a uniform lift across the whole halo
  *
- * Runs a persistent rAF loop rather than only reacting to pointermove, so
- * both keep easing back to rest after the pointer stops moving or leaves —
- * a one-shot event handler would snap once and then just sit there.
- * Disabled under reduced motion and on coarse-pointer (touch) devices,
- * matching the rest of the site's cursor-driven effects.
+ * The mask path and the glow path receive the same `d` string from a single
+ * buildBlobPath call, so the silhouette and its halo are always the same
+ * shape by construction.
+ *
+ * Runs a persistent rAF loop rather than reacting only to pointermove, so
+ * both keep easing back to rest after the pointer stops or leaves - a
+ * one-shot handler would jump once and then sit there. Disabled under
+ * reduced motion and on coarse-pointer devices, matching the rest of the
+ * site's cursor-driven effects.
  */
-export function useReactivePhoto(wrapRef, pathRef, glowRef) {
+export function useReactivePhoto({
+  wrapRef,
+  maskPathRef,
+  glowPathRef,
+  glowGradientRef,
+}) {
   const reducedMotion = usePrefersReducedMotion();
   const pointerRef = useRef({ x: null, y: null });
   const currentRadii = useRef([...BASE_RADII]);
   const currentGlow = useRef(GLOW_MIN);
+  const currentFocus = useRef({ x: BLOB_VIEWBOX / 2, y: BLOB_VIEWBOX / 2 });
 
   useEffect(() => {
     if (reducedMotion) return;
     if (window.matchMedia('(pointer: coarse)').matches) return;
-    if (!wrapRef.current || !pathRef.current) return;
+    if (!wrapRef.current || !maskPathRef.current) return;
 
     const onMove = (e) => {
       pointerRef.current.x = e.clientX;
@@ -37,13 +60,16 @@ export function useReactivePhoto(wrapRef, pathRef, glowRef) {
     };
     window.addEventListener('pointermove', onMove, { passive: true });
 
+    const half = BLOB_VIEWBOX / 2;
     let frame;
+
     const tick = () => {
       const wrap = wrapRef.current;
-      const path = pathRef.current;
-      const glow = glowRef.current;
+      const maskPath = maskPathRef.current;
+      const glowPath = glowPathRef.current;
+      const gradient = glowGradientRef.current;
 
-      if (!wrap || !path) {
+      if (!wrap || !maskPath) {
         frame = requestAnimationFrame(tick);
         return;
       }
@@ -51,6 +77,8 @@ export function useReactivePhoto(wrapRef, pathRef, glowRef) {
       const { x, y } = pointerRef.current;
       let targetRadii = BASE_RADII;
       let targetGlow = GLOW_MIN;
+      let targetFocusX = half;
+      let targetFocusY = half;
 
       if (x !== null) {
         const rect = wrap.getBoundingClientRect();
@@ -63,6 +91,17 @@ export function useReactivePhoto(wrapRef, pathRef, glowRef) {
         const proximity = Math.max(0, 1 - dist / maxDist);
 
         targetGlow = GLOW_MIN + (GLOW_MAX - GLOW_MIN) * proximity;
+
+        // Cursor in viewBox units, clamped so the focus can reach the rim
+        // without flying off. Eased back toward centre by proximity, so a
+        // distant pointer leaves a symmetric halo rather than a hotspot
+        // pinned to one edge.
+        const vx = ((x - rect.left) / rect.width) * BLOB_VIEWBOX;
+        const vy = ((y - rect.top) / rect.height) * BLOB_VIEWBOX;
+        const clamp = (v) =>
+          Math.min(BLOB_VIEWBOX + HOTSPOT_CLAMP, Math.max(-HOTSPOT_CLAMP, v));
+        targetFocusX = half + (clamp(vx) - half) * proximity;
+        targetFocusY = half + (clamp(vy) - half) * proximity;
 
         if (proximity > 0) {
           const cursorAngle = Math.atan2(dy, dx);
@@ -81,11 +120,25 @@ export function useReactivePhoto(wrapRef, pathRef, glowRef) {
         if (Math.abs(next - radii[i]) > 0.0002) pathChanged = true;
         radii[i] = next;
       }
-      if (pathChanged) path.setAttribute('d', buildBlobPath(radii));
 
-      if (glow) {
+      if (pathChanged) {
+        // One build, both consumers: silhouette and halo cannot diverge.
+        const d = buildBlobPath(radii, BLOB_VIEWBOX);
+        maskPath.setAttribute('d', d);
+        if (glowPath) glowPath.setAttribute('d', d);
+      }
+
+      if (glowPath) {
         currentGlow.current += (targetGlow - currentGlow.current) * SMOOTHING;
-        glow.style.opacity = currentGlow.current.toFixed(3);
+        glowPath.setAttribute('opacity', currentGlow.current.toFixed(3));
+      }
+
+      if (gradient) {
+        const focus = currentFocus.current;
+        focus.x += (targetFocusX - focus.x) * SMOOTHING;
+        focus.y += (targetFocusY - focus.y) * SMOOTHING;
+        gradient.setAttribute('cx', focus.x.toFixed(2));
+        gradient.setAttribute('cy', focus.y.toFixed(2));
       }
 
       frame = requestAnimationFrame(tick);
@@ -97,5 +150,5 @@ export function useReactivePhoto(wrapRef, pathRef, glowRef) {
       window.removeEventListener('pointermove', onMove);
       cancelAnimationFrame(frame);
     };
-  }, [reducedMotion, wrapRef, pathRef, glowRef]);
+  }, [reducedMotion, wrapRef, maskPathRef, glowPathRef, glowGradientRef]);
 }

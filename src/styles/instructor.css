@@ -1,8 +1,8 @@
-/* Flat --bg, same reasoning as timeline.css. This is the last section before
-   the fixed footer, so its bottom padding clears the footer bar. */
+/* Flat --bg, same reasoning as timeline.css. .register now follows this
+   section and carries the fixed footer's clearance. */
 .instructor {
   width: 100%;
-  padding: 110px 60px calc(110px + var(--footer-height));
+  padding: 110px 60px;
   background-color: var(--bg);
 }
 
@@ -10,66 +10,36 @@
 .instructor-container {
   position: relative;
   z-index: 2;
-  max-width: 1200px;
+  max-width: 1300px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 0.85fr 1fr;
-  gap: 70px;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
   align-items: center;
 }
 
 .instructor-photo-wrap {
   position: relative;
   aspect-ratio: 1 / 1;
-  max-width: 420px;
+  max-width: 620px;
   margin: 0 auto;
 }
 
-.instructor-photo-glow {
-  position: absolute;
-  inset: -12%;
-  z-index: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 107, 53, 0.32), transparent 70%);
-  filter: blur(6px);
-  /* Baseline/fallback intensity. useReactivePhoto drives this up toward 1 via
-     inline style as the cursor approaches and eases it back down to this
-     same value at rest — keep in sync with GLOW_MIN there. Reduced-motion
-     and touch devices never get a JS write at all, so this is also their
-     permanent value. */
-  opacity: 0.4;
-}
-
 /*
- * Zoom-and-pan technique for recentring the subject within the mask.
- * object-fit:cover alone gives almost no crop slack here, since the source
- * photo and this box are both close to square — object-position by itself
- * has nothing to pan across. Rendering the image at 148% of the box first
- * manufactures that slack; object-position then chooses where within that
- * oversized render the mask sits. The subject (face/torso/guitar) sits
- * left-of-centre in the source photo, with genuine empty space (stairs,
- * railing) on the right, hence the low X value below.
- *
- * Centred via `inset: -24%` (top/right/bottom/left all -24%, which yields
- * the same 148%-sized, centred box as width/height:148% + a translate(-50%,
- * -50%) would) rather than a transform. Combining `transform` with
- * `clip-path: url(#id)` on an element whose clip-path references an
- * objectBoundingBox SVG <clipPath> is a known bad interaction in Chromium/
- * WebKit that can make the clipped content fail to render at all — this
- * sidesteps it entirely rather than relying on a specific engine's fix.
- *
- * Two independent knobs if this ever needs nudging: the inset percentage
- * (more negative = more room to pan, but a tighter crop) and the
- * object-position pair (which part of the source lands at the mask centre).
+ * Everything visual - the blob silhouette, the photo, and the halo - lives
+ * inside this SVG; see the note in Instructor.jsx. Sizing and cropping are
+ * handled by the viewBox and the <image> rect there, so this rule only sizes
+ * the canvas. `overflow: visible` matters: the blob and its halo deliberately
+ * extend a little past the viewBox, and clipping them would flatten the
+ * silhouette back into a square edge.
  */
-.instructor-photo {
-  position: absolute;
+.instructor-photo-svg {
+  position: relative;
   z-index: 1;
-  inset: -24%;
-  object-fit: cover;
-  object-position: 38% 44%;
-  clip-path: url(#instructor-mask);
   display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
 
 .instructor-eyebrow {
@@ -140,10 +110,10 @@
 
 @media (max-width: 768px) {
   .instructor {
-    padding: 72px 24px calc(72px + var(--footer-height));
+    padding: 72px 24px;
   }
 
   .instructor-photo-wrap {
-    max-width: 300px;
+    max-width: 360px;
   }
 }

@@ -1,0 +1,74 @@
+/*
+ * Shared backdrop for the textured sections (.outcomes, .timeline, .about).
+ * Replaces the four-layer `background-image` stack those sections used to
+ * carry on their own roots; see SectionBackdrop.jsx for why it had to split
+ * into elements.
+ *
+ * Stacking: z-index 0 keeps this on the background rung of the site-wide
+ * ladder documented in hero.css — background (0) < cursor accents (1) <
+ * content (2) < footer (100). The section root it sits in must stay
+ * position:relative with NO z-index of its own, or it would trap this whole
+ * subtree above the accents.
+ *
+ * rgb(10, 10, 10) must match --bg in tokens.css if that token ever changes.
+ */
+.section-backdrop {
+  --backdrop-fade: 260px;
+  --backdrop-tint: 0.98;
+  /* Slack the photo can travel through before its edge would scroll into
+     view. The parallax travel in useBackgroundParallax is set well inside
+     this; raise both together, never just the travel. */
+  --backdrop-overscan: 18%;
+
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Taller than its container by --backdrop-overscan at each edge, so there is
+   image to spare in both directions. GSAP owns its transform. */
+.section-backdrop-image {
+  position: absolute;
+  inset: calc(-1 * var(--backdrop-overscan)) 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  will-change: transform;
+}
+
+/*
+ * Sits still while the photo drifts beneath it. Three layers, first on top:
+ *
+ * 1. Top transition band — the neighbouring section ends on flat, untextured
+ *    --bg. Starting the texture immediately below it still reads as a seam
+ *    even though the colour matches, because the *texture* changes on a hard
+ *    line. This fades solid --bg to transparent over --backdrop-fade so it
+ *    eases in instead.
+ * 2. Bottom transition band — the mirror of (1), easing the texture back out
+ *    before the next boundary.
+ * 3. Tint — a near-opaque wash of --bg so the photo reads as faint texture
+ *    rather than a competing picture.
+ *
+ * The bands must stay on this layer rather than the moving one: they exist
+ * to line up with the section's real edges, and drifting them would reopen
+ * the seams they were added to close.
+ */
+.section-backdrop-veil {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+      to bottom,
+      rgb(10, 10, 10),
+      transparent var(--backdrop-fade)
+    ),
+    linear-gradient(to top, rgb(10, 10, 10), transparent var(--backdrop-fade)),
+    linear-gradient(
+      rgba(10, 10, 10, var(--backdrop-tint)),
+      rgba(10, 10, 10, var(--backdrop-tint))
+    );
+  background-size: 100% var(--backdrop-fade), 100% var(--backdrop-fade), cover;
+  background-position: top, bottom, center;
+  background-repeat: no-repeat;
+}

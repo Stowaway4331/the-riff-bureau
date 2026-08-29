@@ -1,0 +1,257 @@
+/*
+ * Final section, so it carries the fixed footer's clearance in its bottom
+ * padding - .instructor used to and no longer does. Flat --bg meets
+ * .instructor's flat --bg above it, so that boundary needs no fade band.
+ *
+ * min-height rather than height: 50vh is the intended size, but a short
+ * viewport (or a browser with a large minimum font size) must be allowed to
+ * grow the section rather than overflow the form out of it.
+ */
+.register {
+  position: relative;
+  width: 100%;
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  padding: 90px 60px calc(90px + var(--footer-height));
+  margin-top: 20px;
+  background-color: var(--bg-deep);
+}
+
+/* Same two-column structure as .instructor-container. */
+.register-container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1300px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.register-logo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 34px;
+}
+
+/* Echoes the halo behind the instructor photo, so the two mirrored layouts
+   read as a pair - but kept faint enough to be felt rather than seen. */
+.register-logo::before {
+  content: '';
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 107, 53, 0.09),
+    rgba(255, 107, 53, 0) 62%
+  );
+}
+
+.register-logo img {
+  position: relative;
+  width: min(230px, 62%);
+  height: auto;
+}
+
+.register-eyebrow {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--orange);
+  text-align: center;
+}
+
+.register-title {
+  margin: 14px 0 0;
+  /* font-size: clamp(1.7rem, 2.6vw, 2.2rem); */
+  font-size: larger;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.register-lead {
+  margin: 16px auto 0;
+  max-width: 44ch;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* Deliberately flat - no card fill, border or radius. Every other section
+   sits directly on --bg, and a raised panel here read as a different site.
+   The inputs carry --surface instead, which is the same figure-on-ground
+   the icon chips and support cards elsewhere use. */
+.register-panel {
+  max-width: 480px;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.register-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* The <label> wraps its input, so the whole block is the hit target and no
+   for/id pairing has to be kept in sync. */
+.register-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.register-field > span {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.register-field > span em {
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+
+.register-field input {
+  width: 100%;
+  padding: 13px 15px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease;
+}
+
+.register-field input::placeholder {
+  color: var(--text-dim);
+}
+
+.register-field input:focus {
+  outline: none;
+  border-color: var(--orange);
+}
+
+/* :focus already colours the border, so this only has to survive forced
+   colours - and must not double up as a second ring. */
+.register-field input:focus-visible {
+  outline: 1px solid transparent;
+}
+
+/* Only after the field has been interacted with, so an untouched form is
+   not shown as wrong on arrival. */
+.register-field input:not(:placeholder-shown):invalid {
+  border-color: #b4462a;
+}
+
+.register-field small {
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+
+/* A tint and a hairline rather than a solid orange fill. Orange is an
+   accent colour everywhere else on the site - eyebrows, 1px borders, small
+   icons - and a block of it here was the loudest thing on the page. */
+.register-submit {
+  align-self: flex-start;
+  padding: 13px 26px;
+  border: 1px solid rgba(255, 107, 53, 0.5);
+  border-radius: 6px;
+  background-color: rgba(255, 107, 53, 0.1);
+  color: var(--orange);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.register-submit:hover:not(:disabled) {
+  background-color: rgba(255, 107, 53, 0.18);
+  border-color: var(--orange);
+}
+
+.register-submit:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.register-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Empty until there is something to announce; :empty keeps it from
+   reserving a gap in the layout in the meantime. */
+.register-status {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.register-status:empty {
+  display: none;
+}
+
+.register-done {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .register-container {
+    grid-template-columns: 1fr;
+    gap: 44px;
+  }
+
+  .register-panel {
+    max-width: 480px;
+    width: 100%;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .register {
+    padding: 64px 24px calc(64px + var(--footer-height));
+  }
+}
+
+@media (max-width: 520px) {
+  .register-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .register-field input,
+  .register-submit {
+    transition: none;
+  }
+}

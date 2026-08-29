@@ -1,23 +1,12 @@
-/*
- * Same 4-layer background pattern as .outcomes (see the comment there for
- * the full rationale): a top and bottom fade band easing to flat --bg, a
- * tint muting the photo to faint texture, then the photo. Since .outcomes
- * (before this section) and .about (after it) both fade to/from the exact
- * same flat --bg at their own edges, the join at both boundaries stays
- * seamless without any section-specific patching.
- *
- * rgb(10, 10, 10) must match --bg in tokens.css if that token ever changes.
- */
+/* Content sits on a flat --bg; the textured backdrop is the
+   <SectionBackdrop> child. See the stacking note in hero.css. */
 .timeline {
+  position: relative;
   width: 100%;
   padding: 110px 60px;
   background-color: var(--bg);
-  background-image: linear-gradient(to bottom, rgb(10, 10, 10), transparent 260px),
-    linear-gradient(to top, rgb(10, 10, 10), transparent 260px),
-    linear-gradient(rgba(10, 10, 10, 0.98), rgba(10, 10, 10, 0.98)), url('/Fiery guitar.png');
-  background-size: 100% 260px, 100% 260px, cover, cover;
-  background-position: top, bottom, center, center;
-  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+  /* The photo, its tint and the edge fade bands live in the
+     <SectionBackdrop> child - see sectionBackdrop.css. */
 }
 
 /* Content tier — see the stacking note in hero.css. */

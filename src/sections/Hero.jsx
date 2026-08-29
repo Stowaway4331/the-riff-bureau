@@ -69,8 +69,10 @@ export function Hero({ ready, onAssetsReady }) {
     { scope: sectionRef, dependencies: [ready, reducedMotion] },
   );
 
+  // data-nav-label: the <h1> below is the site's name, which reads badly as
+  // a navigation label, so SectionDots is given one explicitly.
   return (
-    <section className="hero" ref={sectionRef}>
+    <section className="hero" ref={sectionRef} data-nav-label="Home">
       <div className="hero-canvas-layer">
         <HeroCanvas
           photoSrc={HERO_PHOTO}

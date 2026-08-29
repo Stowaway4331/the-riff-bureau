@@ -18,32 +18,9 @@
      this section, so it no longer sits directly above the fixed footer. */
   padding: 100px 60px;
   background-color: var(--bg);
-  /*
-   * Four stacked background layers (first listed paints on top):
-   *
-   * 1. Top transition band — .hero ends on a flat, untextured --bg (its own
-   *    photo/brush shader already dissolves to that colour near its own
-   *    bottom edge). Starting the textured image immediately below it would
-   *    still read as a seam, since the *texture* changes abruptly even
-   *    though the colour matches. This band fades solid --bg into
-   *    transparent over the first 260px, so the texture eases in instead of
-   *    starting on a hard line.
-   * 2. Bottom transition band — the mirror image of (1). Timeline (the next
-   *    section) is flat --bg again, so this section's own texture has to
-   *    ease back out before it ends, or the same seam reappears at the
-   *    *next* boundary instead.
-   * 3. Tint — a near-opaque wash of --bg over the image so it reads as
-   *    faint texture, not a competing picture.
-   * 4. The image itself.
-   *
-   * rgb(10, 10, 10) must match --bg in tokens.css if that token ever changes.
-   */
-  background-image: linear-gradient(to bottom, rgb(10, 10, 10), transparent 260px),
-    linear-gradient(to top, rgb(10, 10, 10), transparent 260px),
-    linear-gradient(rgba(10, 10, 10, 0.93), rgba(10, 10, 10, 0.93)), url('/background.png');
-  background-size: 100% 260px, 100% 260px, cover, cover;
-  background-position: top, bottom, center, center;
-  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+  /* The photo, its tint and the edge fade bands now live in the
+     <SectionBackdrop> child - see sectionBackdrop.css. They moved off
+     this root so the photo could be transformed on scroll. */
 }
 
 /* Content tier — see the stacking note on .outcomes above. */

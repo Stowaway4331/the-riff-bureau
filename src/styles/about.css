@@ -1,17 +1,12 @@
-/* Same 4-layer background pattern as .outcomes and .timeline — see the
-   comment on .outcomes for the full rationale. .timeline (before this
-   section) and .instructor (after it, flat --bg) both meet this section at
-   the same flat colour, so both boundaries stay seamless. */
+/* Content sits on a flat --bg; the textured backdrop is the
+   <SectionBackdrop> child. See the stacking note in hero.css. */
 .about {
+  position: relative;
   width: 100%;
   padding: 110px 60px;
   background-color: var(--bg);
-  background-image: linear-gradient(to bottom, rgb(10, 10, 10), transparent 260px),
-    linear-gradient(to top, rgb(10, 10, 10), transparent 260px),
-    linear-gradient(rgba(10, 10, 10, 0.98), rgba(10, 10, 10, 0.98)), url('/background2.png');
-  background-size: 100% 260px, 100% 260px, cover, cover;
-  background-position: top, bottom, center, center;
-  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+  /* The photo, its tint and the edge fade bands live in the
+     <SectionBackdrop> child - see sectionBackdrop.css. */
 }
 
 /* Content tier — see the stacking note in hero.css. */

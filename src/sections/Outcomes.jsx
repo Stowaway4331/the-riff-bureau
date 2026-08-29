@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { SectionBackdrop } from '../components/SectionBackdrop';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { CheckIcon, CaretIcon } from '../components/icons/ChecklistIcons';
 import {
@@ -58,7 +59,9 @@ export function Outcomes() {
   useScrollReveal(sectionRef, '.receive-item', { y: 22, stagger: 0.1 });
 
   return (
-    <section className="outcomes" ref={sectionRef}>
+    <section className="outcomes" ref={sectionRef} data-nav-label="Outcomes">
+      <SectionBackdrop image="/background.png" tint={0.92} />
+
       <div className="outcomes-container">
         <div className="outcomes-main">
           <h2 className="outcomes-title">Beginner Level 1</h2>

@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { SectionBackdrop } from '../components/SectionBackdrop';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import {
   AudienceIcon,
@@ -30,6 +31,8 @@ export function About() {
 
   return (
     <section className="about" ref={sectionRef}>
+      <SectionBackdrop image="/background2.png" />
+
       <div className="about-container">
         <p className="about-eyebrow">About</p>
         <h2 className="about-title">What Is The Riff Bureau?</h2>

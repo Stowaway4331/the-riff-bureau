@@ -5,12 +5,16 @@ import { Outcomes } from './sections/Outcomes';
 import { Timeline } from './sections/Timeline';
 import { About } from './sections/About';
 import { Instructor } from './sections/Instructor';
+import { Register } from './sections/Register';
 import { Footer } from './components/Footer';
+import { Menu } from './components/Menu';
+import { SectionDots } from './components/SectionDots';
 import { CursorAccents } from './components/CursorAccents';
 import { LoadingScreen } from './components/LoadingScreen';
 
 export default function App() {
   const [ready, setReady] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleAssetsReady = useCallback(() => setReady(true), []);
 
@@ -27,13 +31,23 @@ export default function App() {
   return (
     <>
       <LoadingScreen visible={!ready} />
-      <Hero ready={ready} onAssetsReady={handleAssetsReady} />
-      <Outcomes />
-      <Timeline />
-      <About />
-      <Instructor />
+
+      {/* SectionDots derives one dot per direct <section> child of this
+          wrapper, so adding a section here is all that is needed for its
+          dot to appear - there is no parallel list to update. */}
+      <main className="page-sections">
+        <Hero ready={ready} onAssetsReady={handleAssetsReady} />
+        <Outcomes />
+        <Timeline />
+        <About />
+        <Instructor />
+        <Register />
+      </main>
+
       <Footer />
-      <CursorAccents />
+      <Menu open={menuOpen} onOpenChange={setMenuOpen} />
+      <SectionDots hidden={menuOpen} />
+      {/* <CursorAccents /> */}
     </>
   );
 }

@@ -1,0 +1,112 @@
+/*
+ * Replaces the native scrollbar (hidden in index.css) as the page's position
+ * indicator. Sits below the menu overlay's 110 so opening the menu covers
+ * it - though it is also explicitly hidden then, see .is-hidden.
+ */
+.section-dots {
+  position: fixed;
+  top: 50%;
+  right: 16px;
+  z-index: 90;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Slides out to the right rather than just fading, so it reads as making way
+   for the panel. `inert` on the element handles focus and pointer events. */
+.section-dots.is-hidden {
+  opacity: 0;
+  transform: translateY(-50%) translateX(20px);
+}
+
+/* Padding, not margin: it grows the hit target to a comfortable size while
+   the visible mark stays small. */
+.section-dot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  padding: 6px 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.section-dot:focus-visible {
+  outline: none;
+}
+
+.section-dot-mark {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background-color: var(--bg);
+  border: 1px solid rgba(255, 107, 53, 0.45);
+  transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.section-dot:hover .section-dot-mark,
+.section-dot:focus-visible .section-dot-mark {
+  border-color: var(--orange);
+}
+
+/* Elongating vertically rather than growing in both axes keeps the column's
+   rhythm intact and reads as a fill of the current position. */
+.section-dot[aria-current='true'] .section-dot-mark {
+  height: 26px;
+  background-color: var(--orange);
+  border-color: var(--orange);
+}
+
+/* Visible only on hover/focus, but never display:none or aria-hidden - this
+   is what gives each button its accessible name. */
+.section-dot-label {
+  position: absolute;
+  right: calc(100% + 2px);
+  top: 50%;
+  white-space: nowrap;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background-color: rgba(10, 10, 10, 0.88);
+  border: 1px solid var(--border);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  opacity: 0;
+  transform: translateY(-50%) translateX(8px);
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.section-dot:hover .section-dot-label,
+.section-dot:focus-visible .section-dot-label {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+  color: var(--text);
+}
+
+@media (max-width: 600px) {
+  .section-dots {
+    right: 8px;
+  }
+
+  .section-dot {
+    width: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-dots,
+  .section-dot-mark,
+  .section-dot-label {
+    transition: none;
+  }
+}

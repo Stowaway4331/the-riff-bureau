@@ -1,0 +1,306 @@
+/*
+ * Stacking, continuing the ladder documented in hero.css: the fixed footer
+ * sits at 100, so the overlay (110), the panel (120) and the toggle (130)
+ * clear it. `.site-menu-root` is deliberately an UNSTYLED wrapper - giving it
+ * a position and z-index would open a stacking context and flatten all three
+ * of these into a single layer at the footer's level.
+ */
+
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  background-color: rgba(0, 0, 0, 0.45);
+  -webkit-backdrop-filter: blur(9px) saturate(0.85);
+  backdrop-filter: blur(9px) saturate(0.85);
+  /* GSAP's autoAlpha writes both of these inline; these are the closed
+     state for the frames before the timeline is built. */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.menu-overlay.is-open {
+  pointer-events: auto;
+}
+
+/* Without backdrop-filter the blur silently does nothing, so lean harder on
+   the dim to keep the same "page has receded" read. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .menu-overlay {
+    background-color: rgba(0, 0, 0, 0.72);
+  }
+}
+
+/*
+ * The panel is laid out in its final position at all times; only the clip
+ * window moves. Nothing translates, so the text never sub-pixel-shifts
+ * mid-animation, and the clipped-away region takes no pointer events.
+ */
+.site-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 120;
+  width: min(420px, 88vw);
+  height: 100vh;
+  height: 100dvh;
+  clip-path: inset(0 0 0 100%);
+  background-color: var(--bg-deep);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.site-menu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent, var(--orange), transparent);
+  opacity: 0.55;
+}
+
+.site-menu-inner {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  /* Top padding clears the toggle, which floats above the panel. */
+  padding: 104px 34px 40px;
+}
+
+.menu-head img {
+  display: block;
+  width: 132px;
+  height: auto;
+}
+
+.menu-head p {
+  margin: 14px 0 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.menu-links {
+  display: flex;
+  flex-direction: column;
+  margin-top: 46px;
+}
+
+.menu-link {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 8px;
+  border-top: 1px solid var(--border);
+  color: var(--text);
+  text-decoration: none;
+  transition: background-color 0.25s ease, padding-left 0.25s ease;
+}
+
+.menu-link:last-child {
+  border-bottom: 1px solid var(--border);
+}
+
+/* A tint rather than --surface: the icon chip is already --surface, and
+   matching them would dissolve the chip into the row on hover. */
+.menu-link:hover {
+  background-color: rgba(255, 107, 53, 0.07);
+  padding-left: 16px;
+}
+
+.menu-link:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: -2px;
+}
+
+.menu-link-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--orange);
+  transition: border-color 0.25s ease;
+}
+
+.menu-link-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.menu-link:hover .menu-link-icon {
+  border-color: var(--orange);
+}
+
+.menu-link-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.menu-link-text strong {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.menu-link-text small {
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.menu-link-arrow {
+  display: flex;
+  color: var(--text-dim);
+  transition: transform 0.25s ease, color 0.25s ease;
+}
+
+.menu-link-arrow svg {
+  width: 18px;
+  height: 18px;
+}
+
+.menu-link:hover .menu-link-arrow {
+  color: var(--orange);
+  transform: translateX(4px);
+}
+
+/* `margin-top: auto` against the flex column's min-height pins this to the
+   bottom of the panel on tall viewports without absolute positioning. */
+.menu-foot {
+  margin: auto 0 0;
+  padding-top: 40px;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
+.menu-foot a {
+  color: var(--orange);
+  text-decoration: none;
+}
+
+.menu-foot a:hover {
+  color: var(--orange-light);
+}
+
+/*
+ * Guitar-pick toggle. The size is FIXED at 58px across breakpoints on
+ * purpose: the blurred fill is clipped with `clip-path: path()`, whose
+ * numbers are px in this element's own box, and the component generates that
+ * path at 52 (TOGGLE_SIZE in Menu.jsx). Changing width/height here alone
+ * would leave the fill clipped to the old silhouette while the outline
+ * scaled with the viewBox - change both together.
+ */
+.menu-toggle {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  z-index: 130;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.25s ease;
+}
+
+.menu-toggle:hover {
+  transform: scale(1.03);
+}
+
+.menu-toggle:focus-visible {
+  outline: 2px solid var(--orange-light);
+  outline-offset: 4px;
+  border-radius: 14px;
+}
+
+.menu-toggle-fill {
+  position: absolute;
+  inset: 0;
+  clip-path: var(--pick-clip);
+  -webkit-backdrop-filter: blur(12px) saturate(1.2);
+  backdrop-filter: blur(12px) saturate(1.2);
+  background-color: rgba(10, 10, 10, 0.22);
+  transition: background-color 0.25s ease;
+}
+
+.menu-toggle:hover .menu-toggle-fill {
+  background-color: rgba(255, 107, 53, 0.08);
+}
+
+/*
+ * One stroke declaration for the whole icon. The pick outline and the three
+ * hamburger bars are siblings inside this <svg> and both inherit `stroke`,
+ * `stroke-width` and `stroke-opacity` from it, so they are guaranteed to
+ * match - there is no second value that could drift.
+ *
+ * overflow: visible so the stroke, which straddles the path, is not cut by
+ * the viewBox bounds; the pick already reaches y=4..96.
+ *
+ * 2 units in a 100 viewBox is ~1px at the rendered 52px - a hairline, which
+ * is the point. Held at 0.65 opacity so the icon recedes until it is
+ * reached for, then comes up to full on hover, focus, or while open.
+ */
+.menu-toggle-icon {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke: var(--orange);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-opacity: 0.65;
+  transition: stroke-opacity 0.25s ease;
+}
+
+.menu-toggle:hover .menu-toggle-icon,
+.menu-toggle:focus-visible .menu-toggle-icon,
+.menu-toggle.is-open .menu-toggle-icon {
+  stroke-opacity: 1;
+}
+
+/* The bars' fold into an X is owned by the GSAP timeline in Menu.jsx, not by
+   CSS - it has to stay in lockstep with the panel reveal, and GSAP's
+   svgOrigin gives exact rotation centres on SVG geometry. */
+
+@media (max-width: 600px) {
+  .menu-toggle {
+    top: 14px;
+    right: 16px;
+  }
+
+  .site-menu-inner {
+    padding: 92px 24px 32px;
+  }
+
+  .menu-links {
+    margin-top: 34px;
+  }
+}
+
+/* The GSAP timeline already collapses to zero duration under this query
+   (see Menu.jsx); these are the CSS-only transitions it does not own. */
+@media (prefers-reduced-motion: reduce) {
+  .menu-toggle,
+  .menu-toggle-fill,
+  .menu-toggle-icon,
+  .menu-link,
+  .menu-link-icon,
+  .menu-link-arrow {
+    transition: none;
+  }
+}
