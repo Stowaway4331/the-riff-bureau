@@ -1,0 +1,73 @@
+/*
+ * "Coming Soon" notice above the registration form. Rendered as the first
+ * child of .register-container (a 2-col grid), so it spans both columns and
+ * sits above the intro/form row. Sits on the section's --bg-deep; a faint
+ * orange wash and hairline mark it as an accent notice without shouting -
+ * orange is a 1px/eyebrow accent everywhere else on the site.
+ */
+.coming-soon {
+  grid-column: 1 / -1;
+  padding: 26px 30px;
+  border: 1px solid rgba(255, 107, 53, 0.22);
+  border-radius: 10px;
+  background: rgba(255, 107, 53, 0.04);
+}
+
+.coming-soon-eyebrow {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--orange);
+}
+
+.coming-soon-title {
+  margin: 12px 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--text);
+  text-align: center;
+}
+
+.coming-soon-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.coming-soon-tag {
+  padding: 6px 14px;
+  border: 1px solid rgba(255, 107, 53, 0.35);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--orange);
+}
+
+.coming-soon-note {
+  margin: 16px 0 0;
+  max-width: 64ch;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+
+/* Highlight the option names the visitor needs to find in the form. */
+.coming-soon-note em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--text);
+}
+
+@media (max-width: 768px) {
+  .coming-soon {
+    padding: 22px 20px;
+  }
+}

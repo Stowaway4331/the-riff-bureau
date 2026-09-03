@@ -131,7 +131,8 @@
   color: var(--text-dim);
 }
 
-.register-field input {
+.register-field input,
+.register-field textarea {
   width: 100%;
   padding: 13px 15px;
   background-color: var(--surface);
@@ -143,18 +144,21 @@
   transition: border-color 0.2s ease;
 }
 
-.register-field input::placeholder {
+.register-field input::placeholder,
+.register-field textarea::placeholder {
   color: var(--text-dim);
 }
 
-.register-field input:focus {
+.register-field input:focus,
+.register-field textarea:focus {
   outline: none;
   border-color: var(--orange);
 }
 
 /* :focus already colours the border, so this only has to survive forced
    colours - and must not double up as a second ring. */
-.register-field input:focus-visible {
+.register-field input:focus-visible,
+.register-field textarea:focus-visible {
   outline: 1px solid transparent;
 }
 
@@ -164,10 +168,83 @@
   border-color: #b4462a;
 }
 
+/* Optional field, so no :invalid styling - just size it and let it grow. */
+.register-field textarea {
+  min-height: 104px;
+  resize: vertical;
+}
+
 .register-field small {
   font-size: 0.78rem;
   line-height: 1.5;
   color: var(--text-dim);
+}
+
+/* ---- "I want to learn" chip group (multi-select) ------------------------- */
+
+/* A <div role="group">, not a <fieldset>, to sidestep legend-in-flex quirks
+   and to match the <label><span> pattern the other fields already use. */
+.register-interest {
+  gap: 12px;
+}
+
+.register-interest-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Same pill vocabulary as .instructor-highlights, made interactive. The real
+   checkbox is visually removed but stays in the a11y tree and focusable. */
+.register-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background-color: var(--surface);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.register-chip input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+}
+
+.register-chip:hover {
+  border-color: var(--text-dim);
+  color: var(--text);
+}
+
+.register-chip:has(input:checked) {
+  border-color: var(--orange);
+  background-color: rgba(255, 107, 53, 0.12);
+  color: var(--orange);
+}
+
+.register-chip:has(input:focus-visible) {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+/* Surfaced only after a submit attempt with nothing picked. */
+.register-interest[data-error='true'] > span {
+  color: #d0714f;
+}
+
+.register-interest-error {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #d0714f;
 }
 
 /* A tint and a hairline rather than a solid orange fill. Orange is an
@@ -251,6 +328,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .register-field input,
+  .register-field textarea,
+  .register-chip,
   .register-submit {
     transition: none;
   }

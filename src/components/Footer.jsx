@@ -6,8 +6,8 @@ export function Footer() {
         <span className="site-footer-divider" aria-hidden="true">
           ·
         </span>
-        <a href="mailto:yadhukrishnanvk111@gmail.com">
-          yadhukrishnanvk111@gmail.com
+        <a href="mailto:theriffbureau@gmail.com">
+          theriffbureau@gmail.com
         </a>
       </div>
     </footer>
